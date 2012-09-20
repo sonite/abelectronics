@@ -23,9 +23,9 @@ with i2c.I2CMaster(1) as bus:
 
 	def getadcreading(address, channel):
 		bus.transaction(i2c.writing_bytes(address, channel))
-		time.sleep(0.05)
+		time.sleep(0.001)
 		h, l, r = bus.transaction(i2c.reading(address,3))[0]
-		time.sleep(0.05)
+		time.sleep(0.001)
 		h, l, r = bus.transaction(i2c.reading(address,3))[0]
 		
 		t = (h << 8 | l)
@@ -48,4 +48,4 @@ with i2c.I2CMaster(1) as bus:
 		print ("7: %02f" % getadcreading(adc_address2, adc_channel3))
 		print ("8: %02f" % getadcreading(adc_address2, adc_channel4))
 		
-		time.sleep(1)	
+		time.sleep(0.001)
