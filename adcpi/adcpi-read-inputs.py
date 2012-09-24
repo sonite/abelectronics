@@ -17,7 +17,9 @@ adc_channel1 = 0x98
 adc_channel2 = 0xB8
 adc_channel3 = 0xD8
 adc_channel4 = 0xF8
-
+# for version 1 Raspberry PI boards use: 
+# with i2c.I2CMaster(0) as bus:
+# for version 2 Raspberry PI boards use: 
 with i2c.I2CMaster(1) as bus:
 	
 
