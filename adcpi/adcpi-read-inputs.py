@@ -32,7 +32,7 @@ with i2c.I2CMaster(1) as bus:
 		
 		t = (h << 8 | l)
 		if (t >= 32768):
-			t = 655361 -t
+			t = 65536 -t
 		v = (t * 0.000154	)
 		if (v < 5.5):
 			return v
