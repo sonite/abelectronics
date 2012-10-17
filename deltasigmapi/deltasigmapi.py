@@ -6,20 +6,31 @@
 # Requries Python 3. 
 # GPIO API depends on Quick2Wire GPIO Admin. To install Quick2Wire GPIO Admin, follow instructions at http://github.com/quick2wire/quick2wire-gpio-admin
 # I2C API depends on I2C support in the kernel.
-# Version 1.0  - 10/10/2012
-# 18 bit resolution working on this version, 16, 14 and 12 bit to do
+# auto I2C port selection code from http://elinux.org/RPi_ADC_I2C_Python by Andrew Scheller
+#
+# Version 1.1  - 17/10/2012
+# Version History:
+# 1.0 - Initial Release
+# 1.1 - Added code for automatic port selection and 16, 14 & 12 bit conversion
 #
 # Usage: getadcreading(address, port, gain, resolution) to return value in millivolts.
 #
 # address = DSPi_address1 or DSPi_address2 - Hex address of I2C chips as configured by board header pins.
 # port = adc input 1-4 for ADC Chips, ports 5-8 are referenced as 1-4 in code with DSPi_address2 as chip address.
-# gain = Use 1, 2, 4 or 8
-# resolution = use 0 for 12 bit, 1 for 14 bit, 2 for 16 bit or 3 for 18 bit.
+# gain use 0 for 1x gain
+# gain use 1 for 2x gain
+# gain use 2 for 4x gain
+# gain use 3 for 8x gain
+# resolution use 0 for 12 bit
+# resolution use 1 for 14 bit
+# resolution use 2 for 16 bit
+# resolution use 3 for 18 bit.
 # 
 
 import quick2wire.i2c as i2c
 
 import time
+import re
 
 DSPi_GAIN_FIELD = 0X03
 DSPi_GAIN_X1 = 0X00 # gain x1
@@ -46,8 +57,8 @@ DSPi_START = 0X80
 DSPi_BUSY = 0X80
 
 
-DSPi_address1 = 0x6f
-DSPi_address2 = 0x68
+DSPi_address1 = 0x68
+DSPi_address2 = 0x69
 
 DSPi_channel1 = 0x98
 DSPi_channel2 = 0xB8
@@ -56,7 +67,20 @@ DSPi_channel4 = 0xF8
 
 varDivisior = 1
 
-with i2c.I2CMaster(1) as bus:
+
+for line in open('/proc/cpuinfo').readlines():
+    m = re.match('(.*?)\s*:\s*(.*)', line)
+    if m:
+        (name, value) = (m.group(1), m.group(2))
+        if name == "Revision":
+            if value [-4:] in ('0002', '0003'):
+                i2c_bus = 0
+            else:
+                i2c_bus = 1
+            break
+            
+            
+with i2c.I2CMaster(i2c_bus) as bus:
 	
 #bus.transaction(i2c.writing_bytes(DSPi_address1, 0X00, 0X0C))
 
@@ -65,26 +89,32 @@ with i2c.I2CMaster(1) as bus:
 		channel = channel - 1
 		adcConfig = DSPi_START | DSPi_CHANNEL_1 | DSPi_CONTINUOUS
 		adcConfig |= chan << 5 | res << 2 | gain
-		#print("adcConfig")
-		#print(adcConfig)
+		
 		
 		varDivisior = 1 << (gain + 2*res)
-		
+		# Select port to read
 		bus.transaction(i2c.writing_bytes(address, adcConfig))
 		
-		
 		time.sleep(0.05)
-		h, m, l ,s = bus.transaction(i2c.reading(address,4))[0]
-		time.sleep(0.05)
-		h, m, l, s  = bus.transaction(i2c.reading(address,4))[0]
+		if (res == 3):
+			# 18 bit mode
+			h, m, l ,s = bus.transaction(i2c.reading(address,4))[0]
+			time.sleep(0.05)
+			h, m, l, s  = bus.transaction(i2c.reading(address,4))[0]
+			# shift bits to product result
+			t = ((h & 0b00000001) << 16) | (m << 8) | l
+		else:
+			# 16, 14 or 12 bit
+			h, l, s = bus.transaction(i2c.reading(address,3))[0]
+			time.sleep(0.05)
+			h, l, s = bus.transaction(i2c.reading(address,3))[0]
+			# shift bits to product result
+			t = (h << 8) | l
 		
-		t = ((h & 0b00000001) << 16) | (m << 8) | l
+		# check if positive or negative number and invert if needed
 		if (h > 128):
 			t = ~(0x020000 - t)
-		
-		#print(t)
-		
-		
+		# return result 	
 		return (t/varDivisior)
 	
 	while True:
