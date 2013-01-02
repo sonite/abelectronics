@@ -32,12 +32,11 @@ Execute with:
 
 
 int fd;
-char *fileName = "/dev/i2c-1"; // use "/dev/i2c-0" for first revision Raspberry Pi's
-int expanderaddress1 = 0x20; // default address
-int expanderaddress2 = 0x21; // default address
-unsigned char buf[10]; // setup empty buffer
+char *fileName = "/dev/i2c-1";
+int expanderaddress1 = 0x20;
+int expanderaddress2 = 0x21;
+unsigned char buf[10];
 
-// declare functions
 void writetoIO(int, int, int ) ;
 void ClearAll();
 void ClearBus1();
@@ -52,84 +51,92 @@ int main(int argc, char **argv) {
 			exit(1);
 	}
 
-	
-	
 	// set both chips to be outputs each bus
+	
+	
 	writetoIO(expanderaddress1, 0x00, 0x00);
 	writetoIO(expanderaddress1, 0x01, 0x00);
 	writetoIO(expanderaddress2, 0x00, 0x00);
 	writetoIO(expanderaddress2, 0x01, 0x00);
 	ClearAll();
 	
-	// loop forever writing pixel data to the led matrix
 	while(1) {
-	// first 8 columns
-	writetoIO(expanderaddress1, 0x13, 0x80);
-	writetoIO(expanderaddress1, 0x12, 0x81);
-	ClearBus1();
+		// first 8 columns
+		writetoIO(expanderaddress1, 0x13, 0x80);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x40);
+		writetoIO(expanderaddress1, 0x12, 0x00);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x20);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x10);
+		writetoIO(expanderaddress1, 0x12, 0xFF);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x08);
+		writetoIO(expanderaddress1, 0x12, 0xC3);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x04);
+		writetoIO(expanderaddress1, 0x12, 0xBD);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x02);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus1();
+		
+		writetoIO(expanderaddress1, 0x13, 0x01);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus1();
+		// second 8 columns
+		writetoIO(expanderaddress2, 0x12, 0x80);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus2();
+		
+		writetoIO(expanderaddress2, 0x12, 0x40);
+		writetoIO(expanderaddress1, 0x12, 0xBD);
+		ClearBus2();
+		
+		writetoIO(expanderaddress2, 0x12, 0x20);
+		writetoIO(expanderaddress1, 0x12, 0xC3);
+		ClearBus2();
+		
+		writetoIO(expanderaddress2, 0x12, 0x02);
+		writetoIO(expanderaddress1, 0x12, 0x00);
+		ClearBus2();
+		
+		writetoIO(expanderaddress2, 0x12, 0x01);
+		writetoIO(expanderaddress1, 0x12, 0x6F);
+		ClearBus2();
+		// third 8 columns
+		writetoIO(expanderaddress2, 0x13, 0x80);
+		writetoIO(expanderaddress1, 0x12, 0x6F);
+		ClearBus3();
+		
+		writetoIO(expanderaddress2, 0x13, 0x40);
+		writetoIO(expanderaddress1, 0x12, 0x6F);
+		ClearBus3();
+		
+		writetoIO(expanderaddress2, 0x13, 0x20);
+		writetoIO(expanderaddress1, 0x12, 0x9F);
+		ClearBus3();
+		
 	
-	writetoIO(expanderaddress1, 0x13, 0x40);
-	writetoIO(expanderaddress1, 0x12, 0xFF);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x20);
-	writetoIO(expanderaddress1, 0x12, 0x81);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x10);
-	writetoIO(expanderaddress1, 0x12, 0x00);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x08);
-	writetoIO(expanderaddress1, 0x12, 0x3C);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x04);
-	writetoIO(expanderaddress1, 0x12, 0x42);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x02);
-	writetoIO(expanderaddress1, 0x12, 0x81);
-	ClearBus1();
-	
-	writetoIO(expanderaddress1, 0x13, 0x01);
-	writetoIO(expanderaddress1, 0x12, 0x81);
-	ClearBus1();
-	// second 8 columns
-	writetoIO(expanderaddress2, 0x12, 0x80);
-	writetoIO(expanderaddress1, 0x12, 0x81);
-	ClearBus2();
-	
-	writetoIO(expanderaddress2, 0x12, 0x40);
-	writetoIO(expanderaddress1, 0x12, 0x42);
-	ClearBus2();
-	
-	writetoIO(expanderaddress2, 0x12, 0x20);
-	writetoIO(expanderaddress1, 0x12, 0x3C);
-	ClearBus2();
-	
-	writetoIO(expanderaddress2, 0x12, 0x02);
-	writetoIO(expanderaddress1, 0x12, 0xFF);
-	ClearBus2();
-	
-	writetoIO(expanderaddress2, 0x12, 0x01);
-	writetoIO(expanderaddress1, 0x12, 0x90);
-	ClearBus2();
-	//third 8 columns
-	writetoIO(expanderaddress2, 0x13, 0x80);
-	writetoIO(expanderaddress1, 0x12, 0x90);
-	ClearBus3();
-	
-	writetoIO(expanderaddress2, 0x13, 0x40);
-	writetoIO(expanderaddress1, 0x12, 0x90);
-	ClearBus3();
-	
-	writetoIO(expanderaddress2, 0x13, 0x20);
-	writetoIO(expanderaddress1, 0x12, 0x60);
-	ClearBus3();
-	
-	writetoIO(expanderaddress2, 0x13, 0x04);
-	writetoIO(expanderaddress1, 0x12, 0x2F);
+		writetoIO(expanderaddress2, 0x13, 0x04);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
+		ClearBus3();
+		
+		writetoIO(expanderaddress2, 0x13, 0x02);
+		writetoIO(expanderaddress1, 0x12, 0x00);
+		ClearBus3();
+		
+		writetoIO(expanderaddress2, 0x13, 0x01);
+		writetoIO(expanderaddress1, 0x12, 0x7E);
 		ClearBus3();
 	}
 
@@ -144,7 +151,7 @@ void writetoIO(int address, int val1, int val2) {
 
 }
 void ClearAll() {
-	writetoIO(expanderaddress1, 0x12, 0x00);
+	writetoIO(expanderaddress1, 0x12, 0xFF);
 	writetoIO(expanderaddress1, 0x13, 0x00);
 	writetoIO(expanderaddress2, 0x12, 0x00);
 	writetoIO(expanderaddress2, 0x13, 0x00);
@@ -152,16 +159,16 @@ void ClearAll() {
 
 		
 void ClearBus1(){;
-	writetoIO(expanderaddress1, 0x12, 0x00);
+	writetoIO(expanderaddress1, 0x12, 0xFF);
 	writetoIO(expanderaddress1, 0x13, 0x00);
 }
 		
 void ClearBus2(){
-	writetoIO(expanderaddress1, 0x12, 0x00);
+	writetoIO(expanderaddress1, 0x12, 0xFF);
 	writetoIO(expanderaddress2, 0x12, 0x00);
 }	
 void ClearBus3(){
-	writetoIO(expanderaddress1, 0x12, 0x00);
+	writetoIO(expanderaddress1, 0x12, 0xFF);
 	writetoIO(expanderaddress2, 0x13, 0x00);
 }
 

@@ -45,40 +45,18 @@ with i2c.I2CMaster(i2c_bus) as bus:
 	bus.transaction(i2c.writing_bytes(expander_address2, 0x00, 0x00))
 	bus.transaction(i2c.writing_bytes(expander_address2, 0x01, 0x00))
 	
-	# code below will count in binary from 0 to 255 on bank b using outputs (9-16) for IC 1
-	# uncomment to run this demo
-	#for i in range(1,255):
-	#	bus.transaction(i2c.writing_bytes(expander_address1, 0x13, i))
-	#	time.sleep(0.1)
-	#	bus.transaction(i2c.writing_bytes(expander_address1, 0x13, 0))
-	#	time.sleep(0.1)
 	
-	# light chaser demo which switches all 32 outputs on and off in sequence
+	
+	
+	bus.transaction(i2c.writing_bytes(expander_address1, 0x12, 0x00))
+	bus.transaction(i2c.writing_bytes(expander_address2, 0x12, 0x00))
+	bus.transaction(i2c.writing_bytes(expander_address2, 0x13, 0x00))
 	while True:
-		# run code on IC 1
-		for i in range(0,8):
-			currentrow = pinarray[i]
-			bus.transaction(i2c.writing_bytes(expander_address1, 0x12, currentrow))
-			time.sleep(0.1)
-		bus.transaction(i2c.writing_bytes(expander_address1, 0x12, alloff))	
-		
-		for i in range(0,8):
-			currentrow = pinarray[i]
-			bus.transaction(i2c.writing_bytes(expander_address1, 0x13, currentrow))
-			time.sleep(0.1)
-		bus.transaction(i2c.writing_bytes(expander_address1, 0x13, alloff))	
-		
-		# run code on IC 2
-		
-		for i in range(0,8):
-			currentrow = pinarray[i]
-			bus.transaction(i2c.writing_bytes(expander_address2, 0x13, currentrow))
-			time.sleep(0.1)
-		bus.transaction(i2c.writing_bytes(expander_address2, 0x13, alloff))	
-		
-		for i in range(0,8):
-			currentrow = pinarray[i]
-			bus.transaction(i2c.writing_bytes(expander_address2, 0x12, currentrow))
-			time.sleep(0.1)
-		bus.transaction(i2c.writing_bytes(expander_address2, 0x12, alloff))		
+		# code below will count in binary from 0 to 255 on bank b using outputs (9-16) for IC 1
+		# uncomment to run this demo
+		for i in range(1,255):
+			bus.transaction(i2c.writing_bytes(expander_address1, 0x13, i))
+			#time.sleep(0.1)
+			bus.transaction(i2c.writing_bytes(expander_address1, 0x13, 0))
+			#time.sleep(0.1)
 		
